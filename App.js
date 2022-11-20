@@ -1,9 +1,11 @@
 import {View,Text} from 'react-native';
 import React , {useEffect, useState} from 'react';
 import firestore from '@react-native-firebase/firestore';
+import database from '@react-native-firebase/database';
 
 export default function App(){
   const [myData,setMyData]=useState(null)
+  const [myDataTwo,setMyDataTwo]=useState(null)
   useEffect(()=>{
     getDatabase(  )
   },[])
@@ -11,7 +13,8 @@ export default function App(){
     try{
       
       const userDocument =await firestore().collection('testing').doc('GJmk1ztSx2Wbveo2C2xK').get();
-    
+      const data =await database().ref('users/1').once("value")
+      console.log(data?.val())
       console.log(userDocument?._data)
       setMyData(userDocument?._data)
     }
