@@ -146,7 +146,7 @@ export default function App() {
                   onLongPress={() => { handleCardLongPress(cardIndex, item.item.value) }}
 
                 >
-                  <Text style={{ color: 'black', height: 30 }}>{item.item.value}</Text>
+                  <Text style={{ color: 'black', height: 30, textAlignVertical: 'center', }}>{item.item.value}</Text>
                 </TouchableOpacity>
               )
             }
@@ -186,7 +186,9 @@ const styles = StyleSheet.create(
       height: 30,
       padding: 20,
       borderRadius: 30,
-      marginVertical: 10
+      marginVertical: 10,
+      justifyContent:'center',
+     
     }
   }
 )
