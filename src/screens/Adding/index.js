@@ -1,18 +1,29 @@
-import { View, Text, TextInput, StyleSheet, StatusBar, Alert, Dimensions, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, StyleSheet, StatusBar, Alert, Dimensions, FlatList, TouchableOpacity, Image } from 'react-native';
+import CheckBox from '@react-native-community/checkbox';
 import React, { useEffect, useState } from 'react';
 import firestore from '@react-native-firebase/firestore';
+import LinearGradient from 'react-native-linear-gradient';
 import database from '@react-native-firebase/database';
+import DatePicker from 'react-native-date-picker'
+
 const { height, width } = Dimensions.get("screen")
 export default function App() {
   const [note, setNote] = useState(null)
   const [list, setList] = useState([])
-  const [myData, setMyData] = useState(null)
-  const [myDataTwo, setMyDataTwo] = useState(null)
+  
   const [isUpdateData, setIsUpdateData] = useState(false)
   const [selectedCardIndex, setSelectedCardIndex] = useState(null)
+  const [date, setDate] = useState(new Date())
+  const [open, setOpen] = useState(false)
+  const [food, setFood] = useState(false)
+  const [cloths, setCloths] = useState(false)
+  const [others, setOthers] = useState(false)
+const [selectedDate,setSelectedDate]=useState()
   useEffect(() => {
     getDatabase()
   }, [])
+
+
   const getDatabase = async () => {
     try {
       const data = await database().ref('notes').on("value", (tempData) => {
@@ -30,7 +41,12 @@ export default function App() {
         if (!list) {
 
           const response = await database().ref(`notes/${1}`).set({
-            value: note
+            expense: note,
+            date:selectedDate.getDate().toString() +"-"+ selectedDate.getMonth().toString() +"-"+ selectedDate.getFullYear().toString(),
+            food:food,
+            cloth:cloths,
+            other:others
+            
           }
 
           );
@@ -43,12 +59,20 @@ export default function App() {
           const index = list.length
 
           const response = await database().ref(`notes/${index}`).set({
-            value: note
+            expense: note,
+            date:"26-2-2022",
+            food:food,
+            cloth:cloths,
+            other:others
           }
 
           );
           console.log(response)
           setNote(null)
+          setSelectedDate(null)
+          setFood(null)
+          setCloths(null)
+          setOthers(null)
         }
 
 
@@ -66,11 +90,19 @@ export default function App() {
     try {
       if (note.length > 0) {
         const response = await database().ref(`notes/${selectedCardIndex}`).update({
-          value: note
+          expense: note,
+          date:"26-2-2022",
+          food:food,
+          cloth:cloths,
+          other:others
         })
         console.log(response)
         setNote(null)
         setIsUpdateData(false)
+        setSelectedDate(null)
+        setFood(null)
+        setCloths(null)
+        setOthers(null)
       }
       else {
         alert("enter value")
@@ -82,15 +114,22 @@ export default function App() {
   }
   const handleCardPress = (cardIndex, cardValue) => {
     try {
-
+      console.log(cardValue)
+      setIsUpdateData(true)
+      setSelectedCardIndex(cardIndex)
+      setNote(cardValue?.expense)
+      setSelectedDate(cardValue?.date)
+      setFood(cardValue?.food)
+      setCloths(cardValue?.cloth)
+      setOthers(cardValue?.other)
     } catch (error) {
-      console.log(err)
+      console.log(error)
     }
   }
   const handleCardLongPress = (cardIndex, cardValue) => {
     try {
 
-      Alert.alert("Title", `Are your sure you want to delete ${cardValue} ?`, [
+      Alert.alert("Title", `Are your sure you want to delete ${cardValue?.expense} ?`, [
 
         {
           text: "Cancel",
@@ -115,18 +154,94 @@ export default function App() {
       console.log(err)
     }
   }
+  console.log("selected date", selectedDate)
   return (
     <View style={styles.container}>
       <StatusBar hidden={true} />
       <View>
-        <Text style={{ fontWeight: 'bold', textAlign: 'center', fontSize: 24 }}>Add Notes</Text>
-        <TextInput style={styles.inputBox} placeholder="Enter any value" value={note} onChangeText={(e) => setNote(e)} />
+        <Text style={{    marginTop: 10,
+     
+      fontSize: 32,
+      fontWeight: 'bold',
+      marginLeft: 10,
+      marginBottom: 10 }}>Add Notes</Text>
+        <TextInput style={styles.inputBox} placeholder="Enter Expense" value={note} onChangeText={(e) => setNote(e)} />
+        <TouchableOpacity onPress={() => setOpen(true)} style={{ borderWidth: 1, borderColor: '#7e8d8b', height: 50, borderRadius: 5, justifyContent: 'center', paddingLeft: 10 }} >
+          <Text style={{ color: '#A0A0A0' }}>{selectedDate ? "26-2-2022" :"Select Date"}</Text>
 
-        {!isUpdateData ? <TouchableOpacity style={styles.addButton} onPress={() => handleAddData()}>
-          <Text style={{ color: 'white' }}>Add</Text>
-        </TouchableOpacity> :
+        </TouchableOpacity>
+        <DatePicker
+          maxDate={new Date()}
+          modal
+          mode="date"
+          open={open}
+          date={date}
+          onConfirm={(date) => {
+            setOpen(false)
+            setDate(date)
+            setSelectedDate(date)
+          }}
+          onCancel={() => {
+            setOpen(false)
+          }}
+          title="Select Date"
+          textColor='#7e8d8b'
+
+        />
+        <View style={{ display: 'flex', flexDirection: 'row', marginBottom: 10, marginTop: 10 }}>
+          <View style={{  display: 'flex', flexDirection: 'row',marginRight:5 }}>
+            <View>
+              <CheckBox
+                disabled={false}
+                value={food }
+                onValueChange={(newValue) => setFood(newValue)}
+
+              />
+            </View>
+            <View style={{justifyContent:'center'}}>
+              <Text >Food</Text>
+            </View>
+          </View>
+          <View style={{  display: 'flex', flexDirection: 'row',marginRight:5 }}>
+            <View>
+              <CheckBox
+                disabled={false}
+                value={cloths}
+                onValueChange={(newValue) => setCloths(newValue)}
+
+              />
+            </View>
+            <View style={{justifyContent:'center'}}>
+              <Text >Cloths</Text>
+            </View>
+          </View>
+
+          <View style={{  display: 'flex', flexDirection: 'row',marginRight:5 }}>
+            <View>
+              <CheckBox
+                disabled={false}
+                value={others}
+                onValueChange={(newValue) => setOthers(newValue)}
+
+              />
+            </View>
+            <View style={{justifyContent:'center'}}>
+              <Text >Other</Text>
+            </View>
+          </View>
+        </View>
+        
+
+        {!isUpdateData ?
+          <TouchableOpacity style={styles.addButton} onPress={() => handleAddData()}>
+            <Image
+              source={require('../../assets/add.png')} />
+            <Text style={{ color: '#7e8d8b', fontWeight: 'bold', marginLeft: 5, textTransform: 'uppercase' }}>Add</Text>
+          </TouchableOpacity> :
           <TouchableOpacity style={styles.addButton} onPress={() => handleUpdateData()}>
-            <Text style={{ color: 'white' }}>Update</Text>
+            <Image
+              source={require('../../assets/updating.png')} />
+            <Text style={{ color: '#7e8d8b', fontWeight: 'bold', marginLeft: 5, textTransform: 'uppercase' }}>Update</Text>
           </TouchableOpacity>
 
         }
@@ -141,12 +256,14 @@ export default function App() {
               console.log(item)
               const cardIndex = item.index
               return (
+            
                 <TouchableOpacity style={styles.card}
-                  onPress={() => handleCardPress(cardIndex, item.item.value)}
-                  onLongPress={() => { handleCardLongPress(cardIndex, item.item.value) }}
+                  onPress={() => handleCardPress(cardIndex, item.item)}
+                 
+                  onLongPress={() => { handleCardLongPress(cardIndex, item.item) }}
 
                 >
-                  <Text style={{ color: 'black', height: 30, textAlignVertical: 'center', }}>{item.item.value}</Text>
+                  <Text style={{ color: 'black', height: 30, textAlignVertical: 'center', }}>{item.item.expense}</Text>
                 </TouchableOpacity>
               )
             }
@@ -165,16 +282,21 @@ const styles = StyleSheet.create(
     },
     inputBox: {
       width: width - 30,
-      borderRadius: 15,
-      borderWidth: 2,
+      borderRadius: 5,
+      borderWidth: 1,
       marginTop: 10,
       padding: 10,
-      marginVertical: 10
+      marginVertical: 10,
+      borderColor: '#7e8d8b'
     },
     addButton: {
-      backgroundColor: 'orange',
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'center',
+      backgroundColor: '#deecea',
       alignItems: 'center',
-      padding: 10
+      padding: 15,
+      borderRadius: 5
     },
     cardCont: {
       marginVertical: 20,
@@ -187,8 +309,8 @@ const styles = StyleSheet.create(
       padding: 20,
       borderRadius: 30,
       marginVertical: 10,
-      justifyContent:'center',
-     
+      justifyContent: 'center',
+
     }
   }
 )
