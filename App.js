@@ -1,194 +1,171 @@
-import { View, Text, TextInput, StyleSheet, StatusBar, Alert, Dimensions, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, StyleSheet, StatusBar, Alert, Dimensions, FlatList, TouchableOpacity, SafeAreaView, ScrollView, Image } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import firestore from '@react-native-firebase/firestore';
-import database from '@react-native-firebase/database';
-const { height, width } = Dimensions.get("screen")
+import Adding from './src/screens/Adding'
+const { width, height } = Dimensions.get("screen")
 export default function App() {
-  const [note, setNote] = useState(null)
-  const [list, setList] = useState([])
-  const [myData, setMyData] = useState(null)
-  const [myDataTwo, setMyDataTwo] = useState(null)
-  const [isUpdateData, setIsUpdateData] = useState(false)
-  const [selectedCardIndex, setSelectedCardIndex] = useState(null)
-  useEffect(() => {
-    getDatabase()
-  }, [])
-  const getDatabase = async () => {
-    try {
-      const data = await database().ref('notes').on("value", (tempData) => {
-        setList(tempData.val())
-      })
 
-    }
-    catch (err) {
-      console.log(err)
-    }
-  }
-  const handleAddData = async () => {
-    try {
-      if (note.length > 0) {
-        if (!list) {
-
-          const response = await database().ref(`notes/${1}`).set({
-            value: note
-          }
-
-          );
-          console.log(response)
-          setNote(null)
-
-        }
-        else {
-
-          const index = list.length
-
-          const response = await database().ref(`notes/${index}`).set({
-            value: note
-          }
-
-          );
-          console.log(response)
-          setNote(null)
-        }
-
-
-      }
-      else {
-        alert("Enter value")
-      }
-    }
-    catch (err) {
-      console.log("error", err)
-    }
-  }
-  console.log(list)
-  const handleUpdateData = async () => {
-    try {
-      if (note.length > 0) {
-        const response = await database().ref(`notes/${selectedCardIndex}`).update({
-          value: note
-        })
-        console.log(response)
-        setNote(null)
-        setIsUpdateData(false)
-      }
-      else {
-        alert("enter value")
-      }
-
-    } catch (error) {
-      console.log(error)
-    }
-  }
-  const handleCardPress = (cardIndex, cardValue) => {
-    try {
-
-    } catch (error) {
-      console.log(err)
-    }
-  }
-  const handleCardLongPress = (cardIndex, cardValue) => {
-    try {
-
-      Alert.alert("Title", `Are your sure you want to delete ${cardValue} ?`, [
-
-        {
-          text: "Cancel",
-          onPress: () => {
-            console.log("Cancel is pressed")
-          }
-        },
-        {
-          text: "Ok",
-          onPress: async () => {
-            try {
-              const response = await database().ref(`notes/${cardIndex}`).remove();
-              console.log(response)
-            } catch (error) {
-
-            }
-          }
-        },
-      ])
-
-    } catch (error) {
-      console.log(err)
-    }
-  }
   return (
-    <View style={styles.container}>
-      <StatusBar hidden={true} />
-      <View>
-        <Text style={{ fontWeight: 'bold', textAlign: 'center', fontSize: 24 }}>Add Notes</Text>
-        <TextInput style={styles.inputBox} placeholder="Enter any value" value={note} onChangeText={(e) => setNote(e)} />
+    <SafeAreaView style={styles.container} >
+      <StatusBar
+        animated={true}
+        backgroundColor={"#ffffff"}
+        barStyle="dark-content"
+      />
 
-        {!isUpdateData ? <TouchableOpacity style={styles.addButton} onPress={() => handleAddData()}>
-          <Text style={{ color: 'white' }}>Add</Text>
-        </TouchableOpacity> :
-          <TouchableOpacity style={styles.addButton} onPress={() => handleUpdateData()}>
-            <Text style={{ color: 'white' }}>Update</Text>
+      <ScrollView>
+        <View>
+          <Text style={styles.topHeading}>Welcome Back!</Text>
+        </View>
+        <View>
+          <View style={{ display: 'flex', flexDirection: 'row', padding: 10, justifyContent: 'space-between' }}>
+
+            <TouchableOpacity style={[styles.card, { backgroundColor: '#d3ece8' }]}>
+              <View style={styles.subCardOne}>
+                <Image
+                  source={require('./src/assets/food.png')}
+                  style={{
+                    alignSelf: 'center',
+                  }}
+                />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.cardText, { color: '#28a197' }]}>Food</Text>
+
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={[styles.card, { backgroundColor: '#fef1ce' }]}>
+              <View style={styles.subCardOne}>
+                <Image
+                  source={require('./src/assets/cloths.png')}
+                  style={{
+                    alignSelf: 'center',
+                  }}
+                />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.cardText, { color: '#bf8e92' }]}>Cloths</Text>
+
+              </View>
+            </TouchableOpacity>
+          </View>
+
+          <View style={{ display: 'flex', flexDirection: 'row', padding: 10, justifyContent: 'space-between' }}>
+            <TouchableOpacity style={[styles.card, { backgroundColor: '#fdd4d7' }]}>
+              <View style={styles.subCardOne}>
+                <Image
+                  source={require('./src/assets/others.png')}
+                  style={{
+                    alignSelf: 'center',
+
+
+                  }}
+                />
+              </View>
+              <View style={{ flex: 1, backgroundColor: '#fdd4d7', borderBottomLeftRadius: 25, borderBottomRightRadius: 25 }}>
+
+                <Text style={[styles.cardText, { color: '#DCA3A8' }]}>Others</Text>
+              </View>
+            </TouchableOpacity>
+
+          </View>
+        </View>
+        <View>
+          <View style={{ display: 'flex', flexDirection: 'row', padding: 10 }}>
+            <View style={{ flex: 1 }}>
+              <Text style={{ textTransform: 'uppercase', fontSize: 15, fontWeight: '600' }}>Today</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={{ textTransform: 'uppercase', fontSize: 15, textAlign: 'right', color: '#404f4f', fontWeight: 'bold' }}>View all</Text>
+            </View>
+          </View>
+        </View>
+
+        <View>
+          <TouchableOpacity style={{ display: 'flex', flexDirection: 'row', padding: 10,}}>
+            <View style={{ justifyContent: 'center' }}>
+              <Image
+                source={require('./src/assets/circle.png')}
+                style={{
+                  alignSelf: 'center',
+                  marginRight:10
+
+                }}
+              /></View>
+            <View style={styles.todayText}><Text >Spent $200 at Burget Lab</Text></View>
+
           </TouchableOpacity>
+          <TouchableOpacity style={{ display: 'flex', flexDirection: 'row', padding: 10,}}>
+            <View style={{ justifyContent: 'center' }}>
+              <Image
+                source={require('./src/assets/circle.png')}
+                style={{
+                  alignSelf: 'center',
+                  marginRight:10
 
-        }
-      </View>
+                }}
+              /></View>
+            <View style={styles.todayText}><Text >Spent $200 at Lucky one</Text></View>
 
-      <View style={styles.cardCont}>
-        <FlatList
-          data={list}
-          renderItem={(item) => {
-            console.log(item)
-            if (item.item !== null) {
-              console.log(item)
-              const cardIndex = item.index
-              return (
-                <TouchableOpacity style={styles.card}
-                  onPress={() => handleCardPress(cardIndex, item.item.value)}
-                  onLongPress={() => { handleCardLongPress(cardIndex, item.item.value) }}
+          </TouchableOpacity>
+          <TouchableOpacity style={{ display: 'flex', flexDirection: 'row', padding: 10,}}>
+            <View style={{ justifyContent: 'center' }}>
+              <Image
+                source={require('./src/assets/circle.png')}
+                style={{
+                  alignSelf: 'center',
+                  marginRight:10
 
-                >
-                  <Text style={{ color: 'black', height: 30, textAlignVertical: 'center', }}>{item.item.value}</Text>
-                </TouchableOpacity>
-              )
-            }
-          }}
-        />
+                }}
+              /></View>
+            <View style={styles.todayText}><Text >Kitchen accessories</Text></View>
 
-      </View>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
 
-    </View>
+    </SafeAreaView>
   )
 }
 const styles = StyleSheet.create(
   {
     container: {
-      flex: 1, alignItems: 'center'
-    },
-    inputBox: {
-      width: width - 30,
-      borderRadius: 15,
-      borderWidth: 2,
-      marginTop: 10,
-      padding: 10,
-      marginVertical: 10
-    },
-    addButton: {
-      backgroundColor: 'orange',
-      alignItems: 'center',
+      flex: 1,
+      justifyContent: 'center',
+      backgroundColor: '#ffffff',
       padding: 10
     },
-    cardCont: {
-      marginVertical: 20,
-
+    topHeading: {
+      marginTop: 10,
+      color: 'black',
+      fontSize: 32,
+      fontWeight: 'bold',
+      marginLeft: 10,
+      marginBottom: 10
     },
     card: {
+      width: 165,
+      height: 140,
+      borderTopLeftRadius: 25,
+      borderTopRightRadius: 25,
+      borderBottomLeftRadius: 25, borderBottomRightRadius: 25,
       backgroundColor: 'white',
-      width: width - 40,
-      height: 30,
-      padding: 20,
-      borderRadius: 30,
-      marginVertical: 10,
-      justifyContent:'center',
-     
-    }
+
+    },
+    subCardOne: {
+      flex: 4,
+      display: 'flex',
+      justifyContent: 'center',
+      borderTopLeftRadius: 25,
+      borderTopRightRadius: 25,
+    },
+    cardText: {
+      fontWeight: 'bold', textAlign: 'center'
+    },
+todayText:{
+  justifyContent:'center',flex:1,borderWidth:1,borderBottomColor:'#b9bcbc',borderLeftColor:'white',borderRightColor:'white',borderTopColor:'white',paddingBottom:10
+}
+
+
   }
 )
