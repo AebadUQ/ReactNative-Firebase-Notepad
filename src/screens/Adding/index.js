@@ -1,11 +1,11 @@
-import { View, Text, TextInput, StyleSheet, StatusBar, Alert, Dimensions, FlatList, TouchableOpacity, Image } from 'react-native';
+import { View, Text, TextInput, StyleSheet, StatusBar, Alert, Dimensions, FlatList, TouchableOpacity, Image ,ScrollView} from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import React, { useEffect, useState } from 'react';
 import firestore from '@react-native-firebase/firestore';
 import LinearGradient from 'react-native-linear-gradient';
 import database from '@react-native-firebase/database';
 import DatePicker from 'react-native-date-picker'
-
+import Moment from "moment-timezone";;
 const { height, width } = Dimensions.get("screen")
 export default function App() {
   const [note, setNote] = useState(null)
@@ -42,7 +42,7 @@ const [selectedDate,setSelectedDate]=useState()
 
           const response = await database().ref(`notes/${1}`).set({
             expense: note,
-            date:selectedDate.getDate().toString() +"-"+ selectedDate.getMonth().toString() +"-"+ selectedDate.getFullYear().toString(),
+            date: selectedDate,
             food:food,
             cloth:cloths,
             other:others
@@ -52,7 +52,10 @@ const [selectedDate,setSelectedDate]=useState()
           );
           console.log(response)
           setNote(null)
-
+          setSelectedDate(null)
+          setFood(null)
+          setCloths(null)
+          setOthers(null)
         }
         else {
 
@@ -60,7 +63,7 @@ const [selectedDate,setSelectedDate]=useState()
 
           const response = await database().ref(`notes/${index}`).set({
             expense: note,
-            date:"26-2-2022",
+            date: selectedDate,
             food:food,
             cloth:cloths,
             other:others
@@ -91,7 +94,7 @@ const [selectedDate,setSelectedDate]=useState()
       if (note.length > 0) {
         const response = await database().ref(`notes/${selectedCardIndex}`).update({
           expense: note,
-          date:"26-2-2022",
+          date:selectedDate,
           food:food,
           cloth:cloths,
           other:others
@@ -114,7 +117,8 @@ const [selectedDate,setSelectedDate]=useState()
   }
   const handleCardPress = (cardIndex, cardValue) => {
     try {
-      console.log(cardValue)
+   
+   console.log(cardValue?.date)
       setIsUpdateData(true)
       setSelectedCardIndex(cardIndex)
       setNote(cardValue?.expense)
@@ -165,9 +169,9 @@ const [selectedDate,setSelectedDate]=useState()
       fontWeight: 'bold',
       marginLeft: 10,
       marginBottom: 10 }}>Add Notes</Text>
-        <TextInput style={styles.inputBox} placeholder="Enter Expense" value={note} onChangeText={(e) => setNote(e)} />
+        <TextInput style={styles.inputBox} placeholder="Enter Expense" value={note} onChangeText={(e) => setNote(e)} placeholderTextColor="#A0A0A0" color="#A0A0A0"/>
         <TouchableOpacity onPress={() => setOpen(true)} style={{ borderWidth: 1, borderColor: '#7e8d8b', height: 50, borderRadius: 5, justifyContent: 'center', paddingLeft: 10 }} >
-          <Text style={{ color: '#A0A0A0' }}>{selectedDate ? "26-2-2022" :"Select Date"}</Text>
+          <Text style={{ color: '#A0A0A0' }}>{selectedDate ? Moment.tz(selectedDate,"America/chicago").format("Do-MMM-YY")  :"Select Date"}</Text>
 
         </TouchableOpacity>
         <DatePicker
@@ -247,7 +251,7 @@ const [selectedDate,setSelectedDate]=useState()
         }
       </View>
 
-      <View style={styles.cardCont}>
+      <ScrollView style={styles.cardCont} showsVerticalScrollIndicator={false}>
         <FlatList
           data={list}
           renderItem={(item) => {
@@ -263,14 +267,15 @@ const [selectedDate,setSelectedDate]=useState()
                   onLongPress={() => { handleCardLongPress(cardIndex, item.item) }}
 
                 >
-                  <Text style={{ color: 'black', height: 30, textAlignVertical: 'center', }}>{item.item.expense}</Text>
+                  <Text style={{ color: 'black', height: 30, textAlignVertical: 'center',width:'100%' ,color:'#7e8d8b',fontWeight:'600'}}>{item.item.expense}</Text>
+                  <Text style={{ color: 'black', height: 30, textAlignVertical: 'center',textAlign:'right',width:'100%',color:'#A0A0A0' }}>{Moment.tz(item.item.date,"America/chicago").format("Do-MMM-YY")}</Text>
                 </TouchableOpacity>
               )
             }
           }}
         />
 
-      </View>
+      </ScrollView>
 
     </View>
   )
@@ -304,10 +309,13 @@ const styles = StyleSheet.create(
     },
     card: {
       backgroundColor: 'white',
-      width: width - 40,
-      height: 30,
-      padding: 20,
-      borderRadius: 30,
+      width: width *0.9,
+      margin:10,
+      height: 50,
+      paddingTop: 30,
+      paddingBottom:30,
+      paddingHorizontal:5,
+      borderRadius: 10,
       marginVertical: 10,
       justifyContent: 'center',
 
