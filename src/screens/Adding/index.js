@@ -171,7 +171,7 @@ const [selectedDate,setSelectedDate]=useState()
       marginBottom: 10 }}>Add Notes</Text>
         <TextInput style={styles.inputBox} placeholder="Enter Expense" value={note} onChangeText={(e) => setNote(e)} placeholderTextColor="#A0A0A0" color="#A0A0A0"/>
         <TouchableOpacity onPress={() => setOpen(true)} style={{ borderWidth: 1, borderColor: '#7e8d8b', height: 50, borderRadius: 5, justifyContent: 'center', paddingLeft: 10 }} >
-          <Text style={{ color: '#A0A0A0' }}>{selectedDate ? Moment.tz(selectedDate,"America/chicago").format("Do-MMM-YY")  :"Select Date"}</Text>
+          <Text style={{ color: '#A0A0A0' }}>{selectedDate ? Moment.tz(selectedDate,"Asia/Karachi").format("Do-MMM-YY")  :"Select Date"}</Text>
 
         </TouchableOpacity>
         <DatePicker
@@ -268,7 +268,7 @@ const [selectedDate,setSelectedDate]=useState()
 
                 >
                   <Text style={{ color: 'black', height: 30, textAlignVertical: 'center',width:'100%' ,color:'#7e8d8b',fontWeight:'600'}}>{item.item.expense}</Text>
-                  <Text style={{ color: 'black', height: 30, textAlignVertical: 'center',textAlign:'right',width:'100%',color:'#A0A0A0' }}>{Moment.tz(item.item.date,"America/chicago").format("Do-MMM-YY")}</Text>
+                  <Text style={{ color: 'black', height: 30, textAlignVertical: 'center',textAlign:'right',width:'100%',color:'#A0A0A0' }}>{Moment.tz(item.item.date,"Asia/Karachi").format("Do-MMM-YY")}</Text>
                 </TouchableOpacity>
               )
             }

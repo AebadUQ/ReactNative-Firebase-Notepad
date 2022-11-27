@@ -3,10 +3,11 @@ import React, { useEffect, useState } from 'react';
 import Adding from './src/screens/Adding'
 const { width, height } = Dimensions.get("screen")
 import Home from './src/screens/Home'
+import Graph from './src/screens/Graph'
 export default function App() {
 
   return (
-    <Adding/>
+    <Graph/>
   )
 }
 const styles = StyleSheet.create(
