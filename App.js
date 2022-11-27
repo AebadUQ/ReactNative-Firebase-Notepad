@@ -7,7 +7,7 @@ import Graph from './src/screens/Graph'
 export default function App() {
 
   return (
-    <Graph/>
+    <Home/>
   )
 }
 const styles = StyleSheet.create(
